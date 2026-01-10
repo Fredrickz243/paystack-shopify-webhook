@@ -1,5 +1,3 @@
-const crypto = require('crypto');
-
 export default async function handler(req, res) {
   // Only accept POST requests
   if (req.method !== 'POST') {
@@ -7,124 +5,81 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Step 1: Verify webhook signature
-    const hash = crypto
-      .createHmac('sha512', process.env.PAYSTACK_SECRET_KEY)
-      .update(JSON.stringify(req.body))
-      .digest('hex');
-
-    if (hash !== req.headers['x-paystack-signature']) {
-      return res.status(400).json({ error: 'Invalid signature' });
-    }
-
     const event = req.body;
 
-    // Step 2: Only process successful charges
+    // Only process successful charges
     if (event.event === 'charge.success') {
-      const { reference, amount, customer, metadata } = event.data;
+      const { reference, amount, customer, metadata, paid_at } = event.data;
 
-      // Step 3: Verify transaction with Paystack
-      const verifyResponse = await fetch(
-        `https://api.paystack.co/transaction/verify/${reference}`,
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
-          }
-        }
-      );
+      // Get product details from metadata
+      const productTitle = metadata.custom_fields?.find(
+        f => f.variable_name === 'product_title'
+      )?.value || 'Unknown Product';
+      
+      const variantId = metadata.custom_fields?.find(
+        f => f.variable_name === 'variant_id'
+      )?.value || 'N/A';
 
-      const verification = await verifyResponse.json();
+      // Format amount (convert kobo to NGN)
+      const amountInNGN = (amount / 100).toLocaleString('en-NG', {
+        style: 'currency',
+        currency: 'NGN'
+      });
 
-      if (verification.data.status === 'success') {
-        // Step 4: Get variant ID from metadata
-        const variantIdField = metadata.custom_fields.find(
-          f => f.variable_name === 'variant_id'
-        );
-        const variantId = variantIdField ? variantIdField.value : null;
-
-        if (!variantId) {
-          throw new Error('Variant ID not found in metadata');
-        }
-
-        // Step 5: Create Shopify draft order
-        const shopifyResponse = await fetch(
-          `https://${process.env.SHOPIFY_STORE}.myshopify.com/admin/api/2024-01/graphql.json`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Shopify-Access-Token': process.env.SHOPIFY_ACCESS_TOKEN
-            },
-            body: JSON.stringify({
-              query: `
-                mutation {
-                  draftOrderCreate(input: {
-                    email: "${customer.email}"
-                    note: "Paid via Paystack - Ref: ${reference}"
-                    lineItems: [
-                      {
-                        variantId: "gid://shopify/ProductVariant/${variantId}"
-                        quantity: 1
-                      }
-                    ]
-                    customAttributes: [
-                      {
-                        key: "paystack_reference"
-                        value: "${reference}"
-                      }
-                    ]
-                  }) {
-                    draftOrder {
-                      id
-                      invoiceUrl
-                    }
-                  }
-                }
-              `
-            })
-          }
-        );
-
-        const shopifyData = await shopifyResponse.json();
+      // Create email content
+      const emailSubject = `New Paystack Order - ${reference}`;
+      const emailBody = `
+        <h2>🎉 New Paystack Payment Received!</h2>
         
-        if (shopifyData.errors) {
-          throw new Error('Shopify API error: ' + JSON.stringify(shopifyData.errors));
-        }
+        <h3>Payment Details:</h3>
+        <ul>
+          <li><strong>Reference:</strong> ${reference}</li>
+          <li><strong>Amount:</strong> ${amountInNGN}</li>
+          <li><strong>Date:</strong> ${new Date(paid_at).toLocaleString()}</li>
+        </ul>
 
-        const draftOrderId = shopifyData.data.draftOrderCreate.draftOrder.id;
+        <h3>Customer Details:</h3>
+        <ul>
+          <li><strong>Email:</strong> ${customer.email}</li>
+          <li><strong>Customer Code:</strong> ${customer.customer_code}</li>
+        </ul>
 
-        // Step 6: Complete (mark as paid) the draft order
-        await fetch(
-          `https://${process.env.SHOPIFY_STORE}.myshopify.com/admin/api/2024-01/graphql.json`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Shopify-Access-Token': process.env.SHOPIFY_ACCESS_TOKEN
-            },
-            body: JSON.stringify({
-              query: `
-                mutation {
-                  draftOrderComplete(id: "${draftOrderId}") {
-                    draftOrder {
-                      id
-                      order {
-                        id
-                      }
-                    }
-                  }
-                }
-              `
-            })
-          }
-        );
+        <h3>Product Details:</h3>
+        <ul>
+          <li><strong>Product:</strong> ${productTitle}</li>
+          <li><strong>Variant ID:</strong> ${variantId}</li>
+          <li><strong>Quantity:</strong> 1</li>
+        </ul>
 
-        return res.status(200).json({ 
-          success: true, 
-          reference,
-          message: 'Order created successfully'
-        });
+        <hr>
+        <p><strong>Action Required:</strong> Create this order manually in Shopify Admin.</p>
+        <p>Go to: Orders → Create order → Add customer email and product</p>
+      `;
+
+      // Send email via Resend API (free tier: 100 emails/day)
+      const emailResponse = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: 'Paystack Notifications <onboarding@resend.dev>',
+          to: process.env.NOTIFICATION_EMAIL,
+          subject: emailSubject,
+          html: emailBody
+        })
+      });
+
+      if (!emailResponse.ok) {
+        throw new Error('Failed to send email');
       }
+
+      return res.status(200).json({ 
+        success: true, 
+        reference,
+        message: 'Email notification sent'
+      });
     }
 
     return res.status(200).json({ received: true });
