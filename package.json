@@ -1,0 +1,6 @@
+{
+  "name": "paystack-shopify-webhook",
+  "version": "1.0.0",
+  "description": "Webhook to connect Paystack payments to Shopify orders",
+  "dependencies": {}
+}
