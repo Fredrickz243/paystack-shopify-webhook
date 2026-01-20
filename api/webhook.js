@@ -197,7 +197,7 @@ export default async function handler(req, res) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          from: 'Je Golden Orders <orders@send.jegolden.com>',
+          from: 'Acme <onboarding@resend.dev>',
           to: ['cokorie321@stu.ui.edu.ng', 'jegolden@jegolden.com'],
           subject: emailSubject,
           html: emailBody
@@ -328,7 +328,7 @@ export default async function handler(req, res) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          from: 'Je Golden <orders@send.jegolden.com>',
+          from: 'Acme <onboarding@resend.dev>',
           to: [customer.email, 'cokorie321@stu.ui.edu.ng', 'jegolden@jegolden.com'],
           subject: customerEmailSubject,
           html: customerEmailBody
