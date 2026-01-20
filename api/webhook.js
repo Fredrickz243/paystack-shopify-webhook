@@ -189,7 +189,7 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           from: 'Paystack Notifications <onboarding@resend.dev>',
-          to: process.env.NOTIFICATION_EMAIL,
+          to: ['cokorie321@stu.ui.edu.ng', 'jegolden@jegolden.com'],
           subject: emailSubject,
           html: emailBody
         })
