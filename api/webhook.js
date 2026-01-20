@@ -197,7 +197,7 @@ export default async function handler(req, res) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          from: 'Je Golden Orders <onboarding@resend.dev>',
+          from: 'Je Golden Orders <orders@send.jegolden.com>',
           to: ['cokorie321@stu.ui.edu.ng', 'jegolden@jegolden.com'],
           subject: emailSubject,
           html: emailBody
@@ -320,7 +320,7 @@ export default async function handler(req, res) {
         </div>
       `;
 
-      // Send customer order summary email
+      // Send customer order summary email (to customer AND both admins)
       const customerEmailResponse = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
@@ -328,8 +328,8 @@ export default async function handler(req, res) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          from: 'Je Golden <onboarding@resend.dev>',
-          to: customer.email,
+          from: 'Je Golden <orders@send.jegolden.com>',
+          to: [customer.email, 'cokorie321@stu.ui.edu.ng', 'jegolden@jegolden.com'],
           subject: customerEmailSubject,
           html: customerEmailBody
         })
