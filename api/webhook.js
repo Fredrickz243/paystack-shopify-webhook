@@ -189,22 +189,28 @@ export default async function handler(req, res) {
         </div>
       `;
 
-      // Send admin notification email
-      const emailResponse = await fetch('https://api.resend.com/emails', {
+      // Send admin notification email via Brevo
+      const adminEmailResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+          'api-key': process.env.BREVO_API_KEY,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          from: 'Acme <onboarding@resend.dev>',
-          to: ['cokorie321@stu.ui.edu.ng', 'jegolden@jegolden.com'],
+          sender: {
+            name: 'Je Golden Orders',
+            email: 'orders@jegolden.com'
+          },
+          to: [
+            { email: 'cokorie321@stu.ui.edu.ng' },
+            { email: 'jegolden@jegolden.com' }
+          ],
           subject: emailSubject,
-          html: emailBody
+          htmlContent: emailBody
         })
       });
 
-      if (!emailResponse.ok) {
+      if (!adminEmailResponse.ok) {
         console.error('Failed to send admin email');
       }
 
@@ -320,18 +326,25 @@ export default async function handler(req, res) {
         </div>
       `;
 
-      // Send customer order summary email (to customer AND both admins)
-      const customerEmailResponse = await fetch('https://api.resend.com/emails', {
+      // Send customer order summary email via Brevo
+      const customerEmailResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+          'api-key': process.env.BREVO_API_KEY,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          from: 'Acme <onboarding@resend.dev>',
-          to: [customer.email, 'cokorie321@stu.ui.edu.ng', 'jegolden@jegolden.com'],
+          sender: {
+            name: 'Je Golden',
+            email: 'orders@jegolden.com'
+          },
+          to: [
+            { email: customer.email },
+            { email: 'cokorie321@stu.ui.edu.ng' },
+            { email: 'jegolden@jegolden.com' }
+          ],
           subject: customerEmailSubject,
-          html: customerEmailBody
+          htmlContent: customerEmailBody
         })
       });
 
