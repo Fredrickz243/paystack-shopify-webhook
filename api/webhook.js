@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import nodemailer from 'nodemailer';
 
 export default async function handler(req, res) {
   // Only accept POST requests
@@ -96,6 +97,17 @@ export default async function handler(req, res) {
       });
 
       // ========================================
+      // GMAIL SMTP SETUP
+      // ========================================
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_APP_PASSWORD
+        }
+      });
+
+      // ========================================
       // EMAIL 1: Admin Notification
       // ========================================
       const emailSubject = `✅ New Verified Paystack Order - ${reference}`;
@@ -189,29 +201,16 @@ export default async function handler(req, res) {
         </div>
       `;
 
-      // Send admin notification email via Brevo
-      const adminEmailResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
-        method: 'POST',
-        headers: {
-          'api-key': process.env.BREVO_API_KEY,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          sender: {
-            name: 'Je Golden Orders',
-            email: 'orders@jegolden.com'
-          },
-          to: [
-            { email: 'cokorie321@stu.ui.edu.ng' },
-            { email: 'jegolden@jegolden.com' }
-          ],
+      try {
+        await transporter.sendMail({
+          from: `"Je Golden Orders" <${process.env.GMAIL_USER}>`,
+          to: ['cokorie321@stu.ui.edu.ng', 'jegolden@jegolden.com'],
           subject: emailSubject,
-          htmlContent: emailBody
-        })
-      });
-
-      if (!adminEmailResponse.ok) {
-        console.error('Failed to send admin email');
+          html: emailBody
+        });
+        console.log('Admin notification sent successfully');
+      } catch (emailError) {
+        console.error('Failed to send admin email:', emailError);
       }
 
       // ========================================
@@ -326,30 +325,16 @@ export default async function handler(req, res) {
         </div>
       `;
 
-      // Send customer order summary email via Brevo
-      const customerEmailResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
-        method: 'POST',
-        headers: {
-          'api-key': process.env.BREVO_API_KEY,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          sender: {
-            name: 'Je Golden',
-            email: 'orders@jegolden.com'
-          },
-          to: [
-            { email: customer.email },
-            { email: 'cokorie321@stu.ui.edu.ng' },
-            { email: 'jegolden@jegolden.com' }
-          ],
+      try {
+        await transporter.sendMail({
+          from: `"Je Golden" <${process.env.GMAIL_USER}>`,
+          to: [customer.email, 'cokorie321@stu.ui.edu.ng', 'jegolden@jegolden.com'],
           subject: customerEmailSubject,
-          htmlContent: customerEmailBody
-        })
-      });
-
-      if (!customerEmailResponse.ok) {
-        console.error('Failed to send customer email');
+          html: customerEmailBody
+        });
+        console.log('Customer order summary sent successfully');
+      } catch (emailError) {
+        console.error('Failed to send customer email:', emailError);
       }
 
       return res.status(200).json({ 
