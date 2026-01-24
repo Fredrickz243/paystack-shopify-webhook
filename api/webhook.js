@@ -234,7 +234,7 @@ export default async function handler(req, res) {
             </div>
 
             <p style="font-size: 16px; color: #333; line-height: 1.6;">
-              We've received your payment and your order is being processed..
+              We've received your payment and your order is being processed. You'll receive tracking details once your item ships.
             </p>
 
             <!-- Order Details -->
@@ -307,7 +307,7 @@ export default async function handler(req, res) {
               <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">Need Help?</h3>
               <p style="margin: 0; color: #666; font-size: 14px; line-height: 1.6;">
                 If you have any questions about your order, please contact us:<br>
-                <strong>Email:</strong> <a href="mailto:jegolden@jegolden.com" style="color: #2563eb;">jegolden@jegolden.com</a><br>
+                <strong>Email:</strong> <a href="mailto:jegolden@jegolden.com" style="color: #2563eb;">support@jegolden.com</a><br>
                 <strong>Website:</strong> <a href="https://jegolden.com" style="color: #2563eb;">jegolden.com</a>
               </p>
             </div>
