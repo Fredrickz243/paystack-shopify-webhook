@@ -234,7 +234,7 @@ export default async function handler(req, res) {
             </div>
 
             <p style="font-size: 16px; color: #333; line-height: 1.6;">
-              We've received your payment and your order is being processed. You'll receive another email with tracking information once your order ships.
+              We've received your payment and your order is being processed..
             </p>
 
             <!-- Order Details -->
