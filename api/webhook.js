@@ -204,7 +204,7 @@ export default async function handler(req, res) {
       try {
         await transporter.sendMail({
           from: `"Je Golden Orders" <${process.env.GMAIL_USER}>`,
-          to: ['jegolden@jegolden.com'],
+          to: ['support@jegolden.com'],
           subject: emailSubject,
           html: emailBody
         });
@@ -220,19 +220,19 @@ export default async function handler(req, res) {
       const customerEmailBody = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
           
+         
           <!-- Header -->
-          <!-- Header -->
-          <div style="background: #ffffff; padding: 30px; text-align: center;">
-          <img src="https://cdn.shopify.com/s/files/1/0906/6043/8350/files/JE_GOLDEN_LOGO_BLACK_b7458925-f598-4131-920f-d7db190313e7.png?v=1760880246" alt="Je Golden" style="max-width: 180px; height: auto;">
-          </div>
+<div style="background: #000000; padding: 30px; text-align: center;">
+  <img src="https://cdn.shopify.com/s/files/1/0906/6043/8350/files/JE_GOLDEN_LOGO_WHITE.png?v=1760625414" alt="Je Golden" style="max-width: 180px; height: auto;">
+</div>
 
+<!-- Order Confirmation -->
+<div style="padding: 30px; background: #f9f9f9;">
+  <div style="background: #ffffff; color: #000000; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 30px; border: 2px solid #e0e0e0;">
+    <h2 style="margin: 0; font-size: 24px; color: #000000;">✓ Order Confirmed!</h2>
+    <p style="margin: 10px 0 0 0; font-size: 14px; color: #333333;">Thank you for your purchase, ${customerName}</p>
+  </div>
 
-          <!-- Order Confirmation -->
-          <div style="padding: 30px; background: #f9f9f9;">
-            <div style="background: #059669; color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 30px;">
-              <h2 style="margin: 0; font-size: 24px;">✓ Order Confirmed!</h2>
-              <p style="margin: 10px 0 0 0; font-size: 14px;">Thank you for your purchase, ${customerName}</p>
-            </div>
 
             <p style="font-size: 16px; color: #333; line-height: 1.6;">
               We've received your payment and your order is being processed. You'll receive tracking details once your item ships.
@@ -279,7 +279,7 @@ export default async function handler(req, res) {
                 </tr>
                 <tr style="border-top: 2px solid #e0e0e0;">
                   <td style="padding: 12px 0; color: #333; font-weight: 700; font-size: 16px;">Total Paid:</td>
-                  <td style="padding: 12px 0; color: #059669; font-weight: 700; font-size: 18px; text-align: right;">${amountInNGN}</td>
+                  <td style="padding: 12px 0; color: #333; font-weight: 700; font-size: 18px; text-align: right;">${amountInNGN}</td>
                 </tr>
               </table>
             </div>
@@ -308,7 +308,7 @@ export default async function handler(req, res) {
               <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">Need Help?</h3>
               <p style="margin: 0; color: #666; font-size: 14px; line-height: 1.6;">
                 If you have any questions about your order, please contact us:<br>
-                <strong>Email:</strong> <a href="mailto:jegolden@jegolden.com" style="color: #2563eb;">support@jegolden.com</a><br>
+                <strong>Email:</strong> <a href="mailto:support@jegolden.com" style="color: #2563eb;">support@jegolden.com</a><br>
                 <strong>Website:</strong> <a href="https://jegolden.com" style="color: #2563eb;">jegolden.com</a>
               </p>
             </div>
@@ -329,7 +329,7 @@ export default async function handler(req, res) {
       try {
         await transporter.sendMail({
           from: `"Je Golden" <${process.env.GMAIL_USER}>`,
-          to: [customer.email, 'jegolden@jegolden.com'],
+          to: [customer.email, 'support@jegolden.com'],
           subject: customerEmailSubject,
           html: customerEmailBody
         });
