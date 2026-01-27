@@ -204,7 +204,7 @@ export default async function handler(req, res) {
       try {
         await transporter.sendMail({
           from: `"Je Golden Orders" <${process.env.GMAIL_USER}>`,
-          to: ['cokorie321@stu.ui.edu.ng', 'jegolden@jegolden.com'],
+          to: ['jegolden@jegolden.com'],
           subject: emailSubject,
           html: emailBody
         });
@@ -221,10 +221,11 @@ export default async function handler(req, res) {
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
           
           <!-- Header -->
-          <div style="background: #050505; padding: 30px; text-align: center;">
-            <h1 style="color: #ffffff; margin: 0; font-size: 28px;">Je Golden</h1>
-            <p style="color: #cccccc; margin: 10px 0 0 0; font-size: 14px;">Premium Fashion Eyewear</p>
+          <!-- Header -->
+          <div style="background: #ffffff; padding: 30px; text-align: center;">
+          <img src="https://cdn.shopify.com/s/files/1/0906/6043/8350/files/JE_GOLDEN_LOGO_BLACK_b7458925-f598-4131-920f-d7db190313e7.png?v=1760880246" alt="Je Golden" style="max-width: 180px; height: auto;">
           </div>
+
 
           <!-- Order Confirmation -->
           <div style="padding: 30px; background: #f9f9f9;">
@@ -328,7 +329,7 @@ export default async function handler(req, res) {
       try {
         await transporter.sendMail({
           from: `"Je Golden" <${process.env.GMAIL_USER}>`,
-          to: [customer.email, 'cokorie321@stu.ui.edu.ng', 'jegolden@jegolden.com'],
+          to: [customer.email, 'jegolden@jegolden.com'],
           subject: customerEmailSubject,
           html: customerEmailBody
         });
