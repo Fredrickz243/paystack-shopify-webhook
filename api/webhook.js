@@ -326,17 +326,18 @@ export default async function handler(req, res) {
         </div>
       `;
 
-      try {
-        await transporter.sendMail({
-          from: `"Je Golden" <${process.env.GMAIL_USER}>`,
-          to: [customer.email, 'support@jegolden.com'],
-          subject: customerEmailSubject,
-          html: customerEmailBody
-        });
-        console.log('Customer order summary sent successfully');
-      } catch (emailError) {
-        console.error('Failed to send customer email:', emailError);
-      }
+    try {
+  await transporter.sendMail({
+    from: `"Je Golden" <${process.env.GMAIL_USER}>`,
+    to: [customer.email],
+    subject: customerEmailSubject,
+    html: customerEmailBody
+  });
+  console.log('Customer order summary sent successfully');
+} catch (emailError) {
+  console.error('Failed to send customer email:', emailError);
+}
+
 
       return res.status(200).json({ 
         success: true, 
